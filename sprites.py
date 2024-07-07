@@ -1,6 +1,6 @@
 from typing import Any
 import pygame
-from game_state import scroll_speed, pipe_gap
+from game_state import SCROLL_SPEED, PIPE_GAP
 from assets import BIRD_IMGS, PIPE_IMG, RESTART
 
 class Sprite(pygame.sprite.Sprite):
@@ -16,16 +16,18 @@ class Sprite(pygame.sprite.Sprite):
 class Bird(Sprite):
     src = BIRD_IMGS[0]
     vel = 0
-    flying = False
-    i = 0
+    flying = True
     clicked = False
 
     def __init__(self, x, y):
         super().__init__(self.src, x, y)
         self.rect.center = [x,y]
 
-    def update(self):
+    def jump(self):
+        # jump
+        self.vel-=10
 
+    def update(self):
         if self.flying:
             self.vel += 0.5
             # Cap Velocity
@@ -41,7 +43,6 @@ class Bird(Sprite):
             self.vel = -10
         if pygame.mouse.get_pressed()[0]==0 and self.clicked==True:
             self.clicked=False
-        self.i += 1
 
         # Rotate Bird while falling
         self.image = pygame.transform.rotate(self.src.copy(), self.vel*-2)
@@ -57,12 +58,12 @@ class Pipe(Sprite):
         # Min, Max bottom pipe y = [0, 600] [pipe at top, pipe at bottom]
         if position == 1:
             self.image = pygame.transform.flip(self.image, False, True)
-            self.rect.bottomleft = [x,y-int(pipe_gap/2)]
+            self.rect.bottomleft = [x,y-int(PIPE_GAP/2)]
         if position == -1:
-            self.rect.topleft = [x,y+int(pipe_gap/2)]
+            self.rect.topleft = [x,y+int(PIPE_GAP/2)]
 
     def update(self):
-        self.rect.x -= scroll_speed
+        self.rect.x -= SCROLL_SPEED
         if self.rect.right<0:
             self.kill()
 
