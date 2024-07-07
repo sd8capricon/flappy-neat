@@ -15,6 +15,8 @@ class Sprite(pygame.sprite.Sprite):
 
 class Bird(Sprite):
     src = BIRD_IMGS[0]
+    pass_pipe = False
+    score = 0
     vel = 0
     flying = True
     clicked = False
@@ -25,7 +27,7 @@ class Bird(Sprite):
 
     def jump(self):
         # jump
-        self.vel-=10
+        self.vel-=5
 
     def update(self):
         if self.flying:
