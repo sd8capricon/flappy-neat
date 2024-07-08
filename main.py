@@ -206,4 +206,4 @@ def run(config_file):
     with open("winner/stat.pkl", "wb") as f:
         pickle.dump(stats, f)
 
-run(config_file)
+# run(config_file)
