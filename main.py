@@ -22,4 +22,6 @@ if choice == 1:
 elif choice == 2:
     play(genome, config)
 elif choice == 3:
-    train(config_file)
+    train(config_file, record_stats=True,
+          save_checkpoints=True,
+          checkpoint_interval=5, save_winner=True)

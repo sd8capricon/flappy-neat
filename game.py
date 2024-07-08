@@ -24,6 +24,7 @@ def play(genome: neat.DefaultGenome = None, config: neat.Config = None):
     clock = pygame.time.Clock()
 
     pygame.init()
+    pygame.display.set_caption("Flappy Bird")
     running = True
 
     # font

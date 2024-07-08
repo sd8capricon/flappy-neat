@@ -162,7 +162,7 @@ def eval_genomes(genomes, config):
             break
 
         for genome in genomeList:
-            if genome.fitness > 1000:
+            if genome.fitness > 5000:
                 running = False
                 break
 
