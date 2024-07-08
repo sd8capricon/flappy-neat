@@ -3,9 +3,10 @@ import pygame
 import neat
 import random
 import math
+import pickle
 from pygame.locals import *
 from config import WIN_HEIGHT, WIN_WIDTH, WIN_SIZE
-from game_state import FPS, GROUND_SCROLL, SCROLL_SPEED, GAME_OVER, LAST_PIPE, PIPE_FREQ, PASS_PIPE, SCORE
+from game_state import FPS, GROUND_SCROLL, SCROLL_SPEED, LAST_PIPE, PIPE_FREQ, SCORE
 from assets import BASE_IMG, BG_IMG
 from sprites import Bird, Pipe, Button
 from typing import List
@@ -27,12 +28,11 @@ def eval_genomes(genomes, config):
     # Pipe States (reset every call)
     ITER_SCORE = 0
     LAST_PIPE = pygame.time.get_ticks() - PIPE_FREQ
-    PASS_PIPE = False
 
     birds:List[Bird] = []
     birdScores:List[int] = []
     nets:List[neat.nn.FeedForwardNetwork] = []
-    ge:List[neat.DefaultGenome] = []
+    genomeList:List[neat.DefaultGenome] = []
     
     for genome_id, genome in genomes:
         genome.fitness = 0
@@ -40,13 +40,13 @@ def eval_genomes(genomes, config):
         nets.append(net)
         birds.append(Bird(100, int(WIN_HEIGHT/2)))
         birdScores.append(0)
-        ge.append(genome)
+        genomeList.append(genome)
 
     pygame.init()
     running = True
 
     # font
-    font = pygame.font.SysFont('Arial', 40)
+    font = pygame.font.SysFont('Arial', 32)
     # defind color
     white = (255,255,255)
 
@@ -94,7 +94,7 @@ def eval_genomes(genomes, config):
                     if bird.rect.left>top_pipe.rect.right:
                         bird.score += 1
                         # Reward bird for passing the pipes
-                        ge[i].fitness += 5
+                        genomeList[i].fitness += 5
                         bird.pass_pipe = False
 
                 # Update max score
@@ -114,7 +114,7 @@ def eval_genomes(genomes, config):
                 net_ip = (bird.vel, delta_x, delta_y_top, delta_y_bottom)
 
                 # Reward for being alive
-                ge[i].fitness += 0.1
+                genomeList[i].fitness += 0.1
                 # Predict to jump or not
                 prediction = nets[i].activate(net_ip)
                 if prediction[0]>0.8:
@@ -122,16 +122,17 @@ def eval_genomes(genomes, config):
 
             # Check Collision
             if pygame.sprite.spritecollide(bird, pipe_group, False) or bird.rect.top < 0:
-                ge[i].fitness -= 1
+                genomeList[i].fitness -= 1
                 birds.pop(i)
                 nets.pop(i)
-                ge.pop(i)
+                genomeList.pop(i)
 
         # Draw Score
         # score = max(bird.score for bird in birds)
-        draw_text("Gen: " + str(generation), font, white, 20, 50, DISPLAY_SURF)
-        draw_text("Max: " + str(SCORE), font, white, 20, 120, DISPLAY_SURF)
-        draw_text(str(ITER_SCORE), font, white, int(WIN_WIDTH/2), 20, DISPLAY_SURF)
+        draw_text("Gen: " + str(generation), font, white, 20, 20, DISPLAY_SURF)
+        draw_text("Max: " + str(SCORE), font, white, 20, 60, DISPLAY_SURF)
+        draw_text("Alive: " + str(len(birds)), font, white, 20, 100, DISPLAY_SURF)
+        draw_text("Score: " + str(ITER_SCORE), font, white, 290, 20, DISPLAY_SURF)
 
         # event loop
         if len(birds)>0:
@@ -159,14 +160,19 @@ def eval_genomes(genomes, config):
             i = birds.index(bird)
             if bird.rect.bottom>=600:
                 bird.flying=False
-                ge[i].fitness -= 2
+                genomeList[i].fitness -= 2
                 birds.pop(i)
                 nets.pop(i)
-                ge.pop(i)
+                genomeList.pop(i)
 
         if len(birds)<=0:
             running=False
             break
+
+        for genome in genomeList:
+            if genome.fitness>1000:
+                running=False
+                break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -180,17 +186,24 @@ def eval_genomes(genomes, config):
     pygame.quit()
 
 
-
-
 config_file = "config.txt"
-config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
+def run(config_file):
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_file)
 
-p = neat.Population(config)
+    p = neat.Population(config)
 
-# Add a stdout reporter to show progress in the terminal.
-p.add_reporter(neat.StdOutReporter(True))
-stats = neat.StatisticsReporter()
-p.add_reporter(stats)
-p.add_reporter(neat.Checkpointer(10, filename_prefix="checkpoints/neat-checkpoint-"))
+    # Add a stdout reporter to show progress in the terminal.
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    p.add_reporter(neat.Checkpointer(10, filename_prefix="checkpoints/neat-checkpoint-"))
 
-winner = p.run(eval_genomes, 200)
+    winner = p.run(eval_genomes, 200)
+
+    with open("winner/winner-genome", "wb") as f:
+        pickle.dump(winner, f)
+    
+    with open("winner/stat.pkl", "wb") as f:
+        pickle.dump(stats, f)
+
+run(config_file)
