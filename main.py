@@ -145,8 +145,6 @@ def eval_genomes(genomes, config):
                 pipe_group.add(btm_pipe) # Odd Index  -> Bottom
                 LAST_PIPE = time_now
 
-            # Update Birdy every frame
-            # birdy.update()
             # Update Pipe every frame
             pipe_group.update()
             # Scroll Base
@@ -180,6 +178,7 @@ def eval_genomes(genomes, config):
                 running=False
                 break
         pygame.display.update()
+        
     generation += 1
     if ITER_SCORE>SCORE:
         SCORE=ITER_SCORE
