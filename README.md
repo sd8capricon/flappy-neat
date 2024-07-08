@@ -11,7 +11,7 @@ NEAT is an evolutionary algorithm that evolves neural networks. In this project,
 ## Demo Video
 Watch the AI in action:
 
-![Flappy Bird NEAT AI](video/video.gif)
+![Flappy Bird NEAT AI](readme/video.gif)
 
 
 ## Libraries Used
@@ -24,7 +24,7 @@ The following libraries are used in this project:
 ## Fitness Progress Plot
 The following plot shows the fitness progress over generations, highlighting both the best and average fitness values achieved during training.
 
-![Fitness Progress](video/Fitness.png)
+![Fitness Progress](readme/Fitness.png)
 
 
 ## Contributors
