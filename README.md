@@ -20,8 +20,15 @@ The following libraries are used in this project:
 - [NEAT-Python](https://neat-python.readthedocs.io/en/latest/) - For implementing the NEAT algorithm.
 - [Matplotlib](https://matplotlib.org/) - For plotting training progress and fitness graphs.
 
-## Fitness Progress Plot
 
+## Fitness Progress Plot
 The following plot shows the fitness progress over generations, highlighting both the best and average fitness values achieved during training.
 
 ![Fitness Progress](video/Fitness.png)
+
+
+## Contributors
+
+-  [Siddharth Dhaigude](https://www.linkedin.com/in/sdhaigude/)<br>
+   [![Linkedin](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sdhaigude/)
+   [![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sd8capricon)
